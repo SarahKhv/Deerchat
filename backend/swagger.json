@@ -1,0 +1,1148 @@
+{
+    "swagger": "2.0",
+    "info": {
+      "version": "1.0.0",
+      "title": "DeerChat CRUD",
+      "description": "DeerChat Application API",
+      "license": {
+        "name": "MIT",
+        "url": "https://opensource.org/licenses/MIT"
+      }
+    },
+    "host": "localhost:8000",
+    "basePath": "/",
+    "tags": [
+      {
+        "name": "Auth",
+        "description": "Authentication endpoints"
+      },
+      {
+          "name": "Subforum",
+          "description": "Subforum endpoints - protected routes need auth"
+      },
+      {
+          "name": "Thread",
+          "description": "Thread endpoints - protected routes need auth"
+      }
+    ],
+    "schemes": [
+      "http"
+    ],
+    "consumes": [
+      "application/json"
+    ],
+    "produces": [
+      "application/json"
+    ],
+    "paths": {
+      "/auth/signup": {
+        "post": {
+          "tags": [
+            "Auth"
+          ],
+          "description": "Register a user to the system",
+          "parameters": [
+            {
+              "name": "signup",
+              "in": "body",
+              "description": "Register a user",
+              "schema": {
+                "$ref": "#/definitions/registerUser"
+              }
+            }
+          ],
+          "produces": [
+            "application/json"
+          ],
+          "responses": {
+            "200": {
+              "description": "Verification Email Sent, verify your account via the email sent to the email provided"
+            }
+          }
+        } 
+      },
+      "/auth/signin": {
+        "post": {
+          "tags": [
+            "Auth"
+          ],
+          "description": "Log a user into the system",
+          "parameters": [
+            {
+              "name": "signin",
+              "in": "body",
+              "description": "Login a user",
+              "schema": {
+                "$ref": "#/definitions/registerUser"
+              }
+            }
+          ],
+          "produces": [
+            "application/json"
+          ],
+          "responses": {
+            "200": {
+              "description": "Use the access token to access protected routes",
+              "schema": {
+                "$ref": "#/definitions/User"
+              }
+            },
+            "401": {
+                "description": "Email address is not associated with any account or Incorrect email/password or Not Verified"
+            }
+          }
+        } 
+      },
+      "/auth/resend": {
+        "post": {
+          "tags": [
+            "Auth"
+          ],
+          "description": "Resend the verification email",
+          "parameters": [
+            {
+              "name": "resend",
+              "in": "body",
+              "description": "Resend the verification email",
+              "schema": {
+                "$ref": "#/definitions/resendEmail"
+              }
+            }
+          ],
+          "produces": [
+            "application/json"
+          ],
+          "responses": {
+            "200": {
+              "description": "Verification Email Sent, verify your account via the email sent to the email provided"
+            },
+            "400": {
+                "description": "This account has already been verified. Please log in."
+            }
+          }
+        } 
+      },
+      "/auth/recover": {
+        "post": {
+          "tags": [
+            "Auth"
+          ],
+          "description": "Resend the password for an email",
+          "parameters": [
+            {
+              "name": "recover",
+              "in": "body",
+              "description": "Recover the password for an email",
+              "schema": {
+                "$ref": "#/definitions/resendEmail"
+              }
+            }
+          ],
+          "produces": [
+            "application/json"
+          ],
+          "responses": {
+            "200": {
+              "description": "A reset email has been sent to the email provided"
+            },
+            "401": {
+                "description": "The email address provided is not associated with any account."
+            }
+          }
+        } 
+      },
+      "/subforum/post": {
+        "post": {
+            "tags": [
+              "Subforum"
+            ],
+            "security": [
+                {"Bearer": []}
+            ],
+            "description": "Create a subforum",
+            "parameters": [
+                {
+                  "name": "Create subforum",
+                  "in": "body",
+                  "description": "Create a new subforum",
+                  "schema": {
+                    "$ref": "#/definitions/createSubforum"
+                  }
+                }
+              ],
+            "produces": [
+            "application/json"
+            ],
+            "responses": {
+              "200": {
+                "description": "OK"
+              },
+              "401": {
+                "description": "Unauthorized Access - No Token Provided!"
+            },
+              "500": {
+                  "description": "Validation Error"
+              }
+            }
+          }
+      },
+      "/subforum/posts": {
+        "get": {
+            "tags": [
+              "Subforum"
+            ],
+            "description": "List all subforums",
+            "produces": [
+            "application/json"
+            ],
+            "security": [
+                {"Bearer": []}
+            ],
+            "responses": {
+              "200": {
+                "description": "OK",
+                "schema": {
+                    "$ref": "#/definitions/listSubforums"
+                }
+              },
+              "401": {
+                  "description": "Unauthorized Access - No Token Provided!"
+              }
+            }
+          }
+      },
+      "/subforum/{name}": {
+        "parameters": [
+            {
+                "name": "name",
+                "in": "path",
+                "required": true,
+                "description": "name of the subforum a user wishes to retrieve",
+                "type": "string"
+            }
+        ],
+        "get": {
+            "tags": [
+              "Subforum"
+            ],
+            "description": "List all subforums",
+            "produces": [
+            "application/json"
+            ],
+            "security": [
+                {"Bearer": []}
+            ],
+            "responses": {
+              "200": {
+                "description": "OK",
+                "schema": {
+                    "$ref": "#/definitions/listSubforums"
+                }
+              },
+              "401": {
+                  "description": "Unauthorized Access - No Token Provided!"
+              }
+            }
+          }
+      },
+      "/subforum/post/{id}/sub": {
+        "post": {
+            "tags": [
+              "Subforum"
+            ],
+            "security": [
+                {"Bearer": []}
+            ],
+            "description": "Subscribe a user to a subforum",
+            "produces": [
+            "application/json"
+            ],
+            "responses": {
+              "200": {
+                "description": "OK"
+              },
+              "401": {
+                  "description": "Unauthorized Access - No Token Provided!"
+              }
+            }
+          },
+          "parameters": [
+              {
+                  "name": "id",
+                  "in": "path",
+                  "required": true,
+                  "description": "ID of the subforum a user wishes to subscribe to",
+                  "type": "string"
+              }
+          ]
+      },
+      "/subforum/post/{id}/hide": {
+        "post": {
+            "tags": [
+              "Subforum"
+            ],
+            "security": [
+                {"Bearer": []}
+            ],
+            "description": "Hide a user from a subforum",
+            "produces": [
+            "application/json"
+            ],
+            "responses": {
+              "200": {
+                "description": "OK"
+              },
+              "401": {
+                  "description": "Unauthorized Access - No Token Provided!"
+              }
+            }
+          },
+          "parameters": [
+              {
+                  "name": "id",
+                  "in": "path",
+                  "required": true,
+                  "description": "ID of the subforum a user wishes to hide",
+                  "type": "string"
+              }
+          ]
+      },
+      "/subforum/post/{id}/ban": {
+        "post": {
+            "tags": [
+              "Subforum"
+            ],
+            "security": [
+                {"Bearer": []}
+            ],
+            "description": "Ban a user from a subforum",
+            "produces": [
+            "application/json"
+            ],
+            "responses": {
+              "200": {
+                "description": "OK"
+              },
+              "401": {
+                  "description": "Unauthorized Access - No Token Provided!"
+              }
+            }
+          },
+          "parameters": [
+              {
+                  "name": "id",
+                  "in": "path",
+                  "required": true,
+                  "description": "ID of the subforum a user wishes to ban",
+                  "type": "string"
+              }
+          ]
+      },
+      "/thread/post": {
+        "post": {
+            "tags": [
+              "Thread"
+            ],
+            "security": [
+                {"Bearer": []}
+            ],
+            "description": "Create a thread",
+            "parameters": [
+                {
+                  "name": "Create thread",
+                  "in": "body",
+                  "description": "Create a new thread",
+                  "schema": {
+                    "$ref": "#/definitions/createThread"
+                  }
+                }
+              ],
+            "produces": [
+            "application/json"
+            ],
+            "responses": {
+              "200": {
+                "description": "OK"
+              },
+              "401": {
+                  "description": "Unauthorized Access - No Token Provided!"
+              },
+              "500": {
+                  "description": "Validation Error"
+              }
+            }
+          }
+      },
+      "/thread/post/{id}": {
+        "parameters": [
+            {
+              "name": "id",
+              "in": "path",
+              "required": true,
+              "description": "ID of the thread to retrieve",
+              "type": "string"
+            }
+          ],
+          "get": {
+            "tags": [
+                "Thread"
+              ],
+              "security": [
+                {"Bearer": []}
+              ],
+              "description": "Retrieve a thread given an ID",
+              "produces": [
+              "application/json"
+              ],
+              "responses": {
+                "200": {
+                  "description": "OK",
+                  "schema": {
+                      "$ref": "#/definitions/getThread"
+                  }
+                },
+                "401": {
+                    "description": "Unauthorized Access - No Token Provided!"
+                },
+                "500": {
+                    "description": "Incorrect ID"
+                }
+            }
+          }
+      },
+      "/thread/post/{id}/comment": {
+        "parameters": [
+            {
+              "name": "id",
+              "in": "path",
+              "required": true,
+              "description": "ID of the thread where we want to comment",
+              "type": "string"              
+            },
+            {
+                "name": "createComment",
+                "in": "body",
+                "description": "Create a new comment",
+                "schema": {
+                  "$ref": "#/definitions/createComment"
+                }
+            }
+          ],
+          "post": {
+            "tags": [
+                "Thread"
+              ],
+              "security": [
+                {"Bearer": []}
+              ],
+              "description": "Create a comment under a specified thread",
+              "produces": [
+              "application/json"
+              ],
+              "responses": {
+                "200": {
+                  "description": "OK"
+                },
+                "401": {
+                    "description": "Unauthorized Access - No Token Provided!"
+                },
+                "500": {
+                    "description": "Incorrect ID or Validation Error"
+                }
+            }
+          }
+      },
+      "/thread/post/{id}/comments": {
+        "parameters": [
+            {
+              "name": "id",
+              "in": "path",
+              "required": true,
+              "description": "ID of the thread who's comments we want to retrieve",
+              "type": "string"
+            }
+          ],
+          "get": {
+            "tags": [
+                "Thread"
+              ],
+              "security": [
+                {"Bearer": []}
+              ],
+              "description": "Retrieve a list of all comments under a specified thread",
+              "produces": [
+              "application/json"
+              ],
+              "responses": {
+                "200": {
+                  "description": "OK",
+                  "schema": {
+                      "$ref": "#/definitions/getComments"
+                  }
+                },
+                "401": {
+                    "description": "Unauthorized Access - No Token Provided!"
+                },
+                "500": {
+                    "description": "Incorrect ID"
+                }
+            }
+          }
+      },
+      "/thread/post/{id}/like": {
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "ID of the thread",
+            "type": "string"
+          }
+        ],
+          "post": {
+            "tags": [
+                "Thread"
+              ],
+              "security": [
+                {"Bearer": []}
+              ],
+              "description": "Like a thread",
+              "produces": [
+              "application/json"
+              ],
+              "responses": {
+                "200": {
+                  "description": "OK"
+                },
+                "401": {
+                    "description": "Unauthorized Access - No Token Provided!"
+                },
+                "500": {
+                    "description": "Incorrect ID"
+                }
+            }
+          }
+      },
+      "/thread/post/{id}/unlike": {
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "ID of the thread",
+            "type": "string"
+          }
+        ],
+        "post": {
+          "tags": [
+              "Thread"
+            ],
+            "security": [
+              {"Bearer": []}
+            ],
+            "description": "UnLike a thread",
+            "produces": [
+            "application/json"
+            ],
+            "responses": {
+              "200": {
+                "description": "OK"
+              },
+              "401": {
+                  "description": "Unauthorized Access - No Token Provided!"
+              },
+              "500": {
+                  "description": "Incorrect ID"
+              }
+          }
+        }
+    },
+    "/thread/post/{id}/dislike": {
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "required": true,
+          "description": "ID of the thread",
+          "type": "string"
+        }
+      ],
+      "post": {
+        "tags": [
+            "Thread"
+          ],
+          "security": [
+            {"Bearer": []}
+          ],
+          "description": "Dislike a thread",
+          "produces": [
+          "application/json"
+          ],
+          "responses": {
+            "200": {
+              "description": "OK"
+            },
+            "401": {
+                "description": "Unauthorized Access - No Token Provided!"
+            },
+            "500": {
+                "description": "Incorrect ID"
+            }
+        }
+      }
+  },
+  "/thread/post/{id}/undislike": {
+    "parameters": [
+      {
+        "name": "id",
+        "in": "path",
+        "required": true,
+        "description": "ID of the thread",
+        "type": "string"
+      }
+    ],
+    "post": {
+      "tags": [
+          "Thread"
+        ],
+        "security": [
+          {"Bearer": []}
+        ],
+        "description": "UnDisLike a thread",
+        "produces": [
+        "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "401": {
+              "description": "Unauthorized Access - No Token Provided!"
+          },
+          "500": {
+              "description": "Incorrect ID"
+          }
+      }
+    }
+},
+"/thread/post/{id}/heart": {
+  "parameters": [
+    {
+      "name": "id",
+      "in": "path",
+      "required": true,
+      "description": "ID of the thread",
+      "type": "string"
+    }
+  ],
+  "post": {
+    "tags": [
+        "Thread"
+      ],
+      "security": [
+        {"Bearer": []}
+      ],
+      "description": "Heart a thread",
+      "produces": [
+      "application/json"
+      ],
+      "responses": {
+        "200": {
+          "description": "OK"
+        },
+        "401": {
+            "description": "Unauthorized Access - No Token Provided!"
+        },
+        "500": {
+            "description": "Incorrect ID"
+        }
+    }
+  }
+},
+"/thread/post/{id}/unheart": {
+  "parameters": [
+    {
+      "name": "id",
+      "in": "path",
+      "required": true,
+      "description": "ID of the thread",
+      "type": "string"
+    }
+  ],
+  "post": {
+    "tags": [
+        "Thread"
+      ],
+      "security": [
+        {"Bearer": []}
+      ],
+      "description": "UnHeart a thread",
+      "produces": [
+      "application/json"
+      ],
+      "responses": {
+        "200": {
+          "description": "OK"
+        },
+        "401": {
+            "description": "Unauthorized Access - No Token Provided!"
+        },
+        "500": {
+            "description": "Incorrect ID"
+        }
+    }
+  }
+},
+"/thread/post/{id}/vomit": {
+  "parameters": [
+    {
+      "name": "id",
+      "in": "path",
+      "required": true,
+      "description": "ID of the thread",
+      "type": "string"
+    }
+  ],
+  "post": {
+    "tags": [
+        "Thread"
+      ],
+      "security": [
+        {"Bearer": []}
+      ],
+      "description": "Vomit a thread",
+      "produces": [
+      "application/json"
+      ],
+      "responses": {
+        "200": {
+          "description": "OK"
+        },
+        "401": {
+            "description": "Unauthorized Access - No Token Provided!"
+        },
+        "500": {
+            "description": "Incorrect ID"
+        }
+    }
+  }
+},
+"/thread/post/{id}/unvomit": {
+  "parameters": [
+    {
+      "name": "id",
+      "in": "path",
+      "required": true,
+      "description": "ID of the thread",
+      "type": "string"
+    }
+  ],
+  "post": {
+    "tags": [
+        "Thread"
+      ],
+      "security": [
+        {"Bearer": []}
+      ],
+      "description": "UnVomit a thread",
+      "produces": [
+      "application/json"
+      ],
+      "responses": {
+        "200": {
+          "description": "OK"
+        },
+        "401": {
+            "description": "Unauthorized Access - No Token Provided!"
+        },
+        "500": {
+            "description": "Incorrect ID"
+        }
+    }
+  }
+},
+"/thread/post/{id}/cry": {
+  "parameters": [
+    {
+      "name": "id",
+      "in": "path",
+      "required": true,
+      "description": "ID of the thread",
+      "type": "string"
+    }
+  ],
+  "post": {
+    "tags": [
+        "Thread"
+      ],
+      "security": [
+        {"Bearer": []}
+      ],
+      "description": "Cry a thread",
+      "produces": [
+      "application/json"
+      ],
+      "responses": {
+        "200": {
+          "description": "OK"
+        },
+        "401": {
+            "description": "Unauthorized Access - No Token Provided!"
+        },
+        "500": {
+            "description": "Incorrect ID"
+        }
+    }
+  }
+},
+"/thread/post/{id}/uncry": {
+  "parameters": [
+    {
+      "name": "id",
+      "in": "path",
+      "required": true,
+      "description": "ID of the thread",
+      "type": "string"
+    }
+  ],
+  "post": {
+    "tags": [
+        "Thread"
+      ],
+      "security": [
+        {"Bearer": []}
+      ],
+      "description": "UnCry a thread",
+      "produces": [
+      "application/json"
+      ],
+      "responses": {
+        "200": {
+          "description": "OK"
+        },
+        "401": {
+            "description": "Unauthorized Access - No Token Provided!"
+        },
+        "500": {
+            "description": "Incorrect ID"
+        }
+    }
+  }
+}
+},
+    "definitions": {
+        "createSubforum": {
+            "required": [
+                "title",
+                "description"
+            ],
+            "properties": {
+                "title": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                }
+            }
+        },
+        "createThread": {
+            "required": [
+                "title",
+                "body",
+                "subforum"
+            ],
+            "properties": {
+                "title": {
+                    "type": "string"
+                },
+                "body": {
+                    "type": "string"
+                },
+                "subforum": {
+                    "type": "string"
+                }
+            }
+        },
+        "createComment": {
+            "required": [
+                "body"
+            ],
+            "properties": {
+                "body": {
+                    "type": "string"
+                }
+            }
+        },
+        "getComments": {
+            "required": [
+                "threadID", 
+                "comments"
+            ],
+            "properties": {
+                "threadID": {
+                    "type": "string"
+                },
+                "comments": {
+                    "type": "array",
+                    "$ref": "#/definitions/Comments"
+                }
+            }
+        },
+        "Comments": {
+            "required": [
+                "_id",
+                "body",
+                "username",
+                "upvotes",
+                "downvotes",
+                "threadID",
+                "createdAt",
+                "updatedAt",
+                "__v"
+            ],
+            "properties": {
+                "_id": {
+                    "type": "string"
+                },
+                "body": {
+                    "type": "string"
+                },
+                "username": {
+                    "type": "string"
+                },
+                "upvotes": {
+                    "type": "integer"
+                },
+                "downvotes": {
+                    "type": "integer"
+                },
+                "threadID": {
+                    "type": "string"
+                },
+                "createdAt": {
+                    "type": "string",
+                    "format": "date"
+                },
+                "updatedAt": {
+                    "type": "string",
+                    "format": "date"
+                },
+                "__v": {
+                    "type": "integer"
+                }
+            }
+        },
+        "getThread": {
+            "required": [
+                "_id",
+                "title",
+                "subforum",
+                "body",
+                "comments",
+                "createdAt",
+                "updatedAt",
+                "__v",
+                "username",
+                "likes",
+                "dislikes",
+                "hearts",
+                "crying",
+                "vomit",
+                "user_colours"
+            ],
+            "properties": {
+                "_id": {
+                    "type": "string"
+                },
+                "title": {
+                    "type": "string"
+                },
+                "subforum": {
+                    "type": "string"
+                },
+                "body": {
+                    "type": "string"
+                },
+                "comments": {
+                    "type": "array",
+                    "items": { "type": "string" },
+                    "uniqueItems": true
+                },
+                "createdAt": {
+                    "type": "string",
+                    "format": "date"
+                },
+                "updatedAt": {
+                    "type": "string",
+                    "format": "date"
+                },
+                "__v": {
+                    "type": "integer"
+                },
+                "email": {
+                    "type": "string"
+                },
+                "likes": {
+                  "type": "integer"
+                },
+                "dislikes": {
+                  "type": "integer"
+                },
+                "hearts": {
+                  "type": "integer"
+                },
+                "crying": {
+                  "type": "integer"
+                },
+                "vomit": {
+                  "type": "integer"
+                },
+                "user_colours": {
+                  "type": "array",
+                  "items": { "type": "string" },
+                  "uniqueItems": true
+              }
+            }
+
+        },
+        "listSubforums": {
+            "required": [ 
+                [
+                "_id",
+                "title",
+                "description",
+                "threads",
+                "subscribers",
+                "hidden",
+                "banned",
+                "createdAt",
+                "updatedAt",
+                "__v"
+                ]
+            ],
+            "properties": {
+                
+                "_id": {
+                    "type": "string"
+                },
+                "title": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "threads": {
+                    "type": "array",
+                    "items": { "type": "string" },
+                    "uniqueItems": true
+                },
+                "subscribers": {
+                    "type": "array",
+                    "items": { "type": "string" },
+                    "uniqueItems": "true"
+                },
+                "hidden": {
+                    "type": "array",
+                    "items": { "type": "string" },
+                    "uniqueItems": "true"
+                },
+                "banned": {
+                    "type": "array",
+                    "items": { "type": "string" },
+                    "uniqueItems": "true"
+                },
+                "createdAt": {
+                    "type": "string",
+                    "format": "date"
+                },
+                "updatedAt": {
+                    "type": "string",
+                    "format": "date"
+                },
+                "__v": {
+                    "type": "integer"
+                } 
+            
+            }
+        },
+    
+      "User": {
+        "required": [        
+          "token",
+          "user",
+          "_id",
+          "companies"
+        ],
+        "properties": {
+          "token": {
+            "type": "string"
+          },
+          "user": {
+              "type": "object",
+              "properties": {
+                "_id": {
+                    "type": "string"
+                },
+                "email": {
+                    "type": "string"
+                },
+                "password": {
+                    "type": "string"
+                },
+                "isVerified": {
+                    "type": "boolean"
+                },
+                "createdAt": {
+                    "type": "string",
+                    "format": "date"
+                },
+                "updatedAt": {
+                    "type": "string",
+                    "format": "date"
+                },
+                "__v": {
+                    "type": "integer"
+                } 
+              }
+          } 
+        }
+      },
+      "resendEmail": {
+        "required": [
+            "email"
+        ],
+        "properties": {
+            "email": {
+                "type": "string"
+            }
+        }
+    },
+      "registerUser": {
+          "required": [
+              "email",
+              "password"
+          ],
+          "properties": {
+              "email": {
+                  "type": "string"
+              },
+              "password": {
+                  "type": "string"
+              }
+          }
+      },
+      "Users": {
+        "type": "array",
+        "$ref": "#/definitions/User"
+      }
+    },
+    "securityDefinitions" : {
+        "Bearer": {
+            "type": "apiKey",
+            "name": "Authorization",
+            "in": "header"
+        }
+    }
+    
+    
+}
